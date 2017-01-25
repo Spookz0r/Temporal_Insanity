@@ -3,6 +3,7 @@ import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import CompressedImage
 
 
 import cv2, sys
@@ -11,28 +12,28 @@ import numpy as np
 class image_converter:
 	
 	def __init__(self):
-		self.image_pub = rospy.Publisher("image_topic_2",Image,queue_size=1)
+		
 		
 		self.bridge = CvBridge()
-		self.image_sub = rospy.Subscriber("image_topic",Image,self.callback)
+		self.image_sub = rospy.Subscriber("image_compressed",CompressedImage,self.callback, queue_size=1)
 		print("Created image converter")
 
 	def callback(self, data):
-		try:
-			cv_image = self.bridge.imgmsg_to_cv2(data,"bgr8")
-		except CvBridgeError as e:
-			print(e)
-			
-		(rows,cols,channels) = cv_image.shape
-		if cols > 60 and rows > 60 :
-			cv2.circle(cv_image, (rows/2,cols/2), 40, 255)
-		cv2.imshow("Image window", cv_image)
-		cv2.waitKey(3)
+		##Cv bridge does not support compressed image in python...
+# 		try:
+# 			cv_image = self.bridge.imgmsg_to_cv2(data,"bgr8")
+# 		except CvBridgeError as e:
+# 			print(e)
+		np_arr = np.fromstring(data.data, np.uint8)
+		image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
 		
-		try:
-			self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
-		except CvBridgeError as e:
-			print(e)
+		
+		
+		
+		
+		
+		cv2.imshow("Image window", image_np)
+		cv2.waitKey(2)
 
 
 

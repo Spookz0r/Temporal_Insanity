@@ -3,6 +3,7 @@ import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import CompressedImage
 
 
 import cv2, sys
@@ -13,6 +14,8 @@ def main(args):
     rospy.init_node('camera_publisher', anonymous=True)
     
     image_pub = rospy.Publisher("image_topic",Image, queue_size=1)
+    image_pub_compressed = rospy.Publisher("image_compressed",CompressedImage,queue_size=1)
+    
     bridge = CvBridge()
     cap = cv2.VideoCapture(0)
 
@@ -27,6 +30,17 @@ def main(args):
         
 
         image_pub.publish(bridge.cv2_to_imgmsg(frame, encoding="bgr8"))
+        
+        ## Create compressed image message
+        msg = CompressedImage()
+        msg.header.stamp = rospy.Time.now()
+        msg.format = "jpeg"
+        msg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
+        
+        
+        ## publish compressed image
+        image_pub_compressed.publish(msg)
+        
         #rospy.spin()
         
     cap.release()
