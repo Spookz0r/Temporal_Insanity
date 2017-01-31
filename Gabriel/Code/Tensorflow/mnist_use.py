@@ -30,7 +30,7 @@ keep_prob = sess.graph.get_tensor_by_name("keep_prob:0")
 
 ''' Read picture '''
 
-image_b = mnist.test.images[420]
+image_b = mnist.test.images[1337]
 plt.imshow(image_b.reshape([28,28]), cmap='Greys')
 
 #plt.show()
@@ -48,3 +48,4 @@ print("I think it is a:")
 print(sess.run(tf.argmax(result,1)))
 
 plt.show()
+
