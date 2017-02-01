@@ -1,0 +1,13 @@
+Motor:
+Connect to h-bridge
+Brown, -
+Orange, +
+
+
+Potentiometer:
+Connect to arduino. 
+White, 5V (3.3V works but will go from 0-660)
+Black, GND
+Red, Analog in.
+
+
