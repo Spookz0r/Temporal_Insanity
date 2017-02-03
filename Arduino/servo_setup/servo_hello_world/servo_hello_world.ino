@@ -27,8 +27,6 @@ void setup() {
     pinMode(pwm_a, OUTPUT); // Set control pins to be outputs
     pinMode(dir_a0, OUTPUT);
     pinMode(dir_a1, OUTPUT);
-
-    
 }
 
 void loop() {
