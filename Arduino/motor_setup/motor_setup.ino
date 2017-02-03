@@ -26,6 +26,19 @@ void loop() {
   delay(100);
 }
 
+void forward(int speed){
+  motor_dir[0] = 1;
+  motor_dir[1] = 0;
+  analogWrite(motor_speed_pwm_pin, speed);
+}
+
+
+void backwards(int speed){
+  motor_dir[0] = 0;
+  motor_dir[1] = 1;
+  analogWrite(motor_speed_pwm_pin, speed);
+}
+
 void bip(){
   counter++;
 }
