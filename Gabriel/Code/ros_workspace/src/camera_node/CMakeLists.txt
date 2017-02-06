@@ -8,10 +8,15 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
-  opencv2
   cv_bridge
   std_msgs
 )
+
+
+set(CMAKE_PREFIX_PATH "/home/opencv-3.1.0")
+find_package(OpenCV 3.1 REQUIRED)
+set(OpenCV_INCLUDE_DIRS "/home/opencv-3.1.0/include")
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 ###########
 ## Build ##
@@ -21,8 +26,11 @@ find_package(catkin REQUIRED COMPONENTS
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
 )
-
+catkin_package()
 
 catkin_python_setup()
+
+add_executable(camera_pub_cpp src/camera_pub_cpp.cpp)
+target_link_libraries(camera_pub_cpp ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
