@@ -11,6 +11,10 @@ import time, cv2, sys
 import numpy as np
 
 
+def camera():
+
+	
+
 
 def main(args):
     rospy.init_node('camera_rpi', anonymous=True)
@@ -25,7 +29,7 @@ def main(args):
     # initialize camera and grab reference to raw camera capture
     camera = PiCamera()
     camera.resolution = (img_width, img_height)
-    camera.framerate = 30
+    camera.framerate = 90
     rawCapture = PiRGBArray(camera, size=(img_width, img_height))
 
     #allow camera to warm up
@@ -52,18 +56,18 @@ def main(args):
         #cv2.imshow("Frame", image)
         #key = cv2.waitKey(1) & 0xFF
 
-        rawCapture.truncate(0)
-        rawCapture.seek(0)
         
+        rawCapture.seek(0)
+        rawCapture.truncate()
         #if key == ord("q"):
           #  break
 
 
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print("Shutting down")
-    cv2.destroyAllWindows()
+	try:
+		rospy.spin()
+	except KeyboardInterrupt:
+		print("Shutting down")
+	cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
