@@ -8,7 +8,6 @@ from sensor_msgs.msg import CompressedImage
 
 
 from imutils.video.pivideostream import PiVideoStream
-from imutils.video import FPS
 import argparse
 import imutils
 from picamera.array import PiRGBArray
@@ -16,15 +15,6 @@ from picamera import PiCamera
 import time, cv2, sys
 import numpy as np
 from threading import Thread
-
-
-    
-ap = argparse.ArgumentParser()
-ap.add_argument("-n", "--num-frames", type=int, default=100,
-	help="# of frames to loop over for FPS test")
-ap.add_argument("-d", "--display", type=int, default=-1,
-	help="Whether or not frames should be displayed")
-args = vars(ap.parse_args())
 
 
 
@@ -75,10 +65,9 @@ def main(args):
 
     camera_stream = PiVideoStream().start()
     time.sleep(2.0)    
-    fps = FPS().start()
 
+	# limit publish frame rate
     r = rospy.Rate(60)
-
 
     while not rospy.is_shutdown():
 		start_time = time.time()
