@@ -1,4 +1,5 @@
 /* Dont use TIMER 3, interrupts the h-bridge, at least for the servo
+ * Dont use TIMER 4, interrupts pwm signal for H-bridge
 To start ros node in terminal:
  rosrun rosserial_python serial_node.py /dev/ttyACM0
  
@@ -150,7 +151,7 @@ void setup(){
   DDRH = DDRH | B00111000; //sets Ph3, Ph4 PH5 as output
 
   noInterrupts();
-
+ 
   //Timer5 16bit timer VELOCITY_PUBLISH_HZ hz for publish velocity
   TCCR5A = 0;  //Sets tccr3a register to 0
   TCCR5B = 0;  //sets tccr3b register to 0
@@ -164,7 +165,7 @@ void setup(){
 
   
   //Timer4  16bit timer SERVO_UPDATE_HZ hz for servo update
-  
+  /*
   TCCR4A = 0;  //Sets tccr3a register to 0
   TCCR4B = 0;  //sets tccr3b register to 0
   TCNT4 = 0;   //initialize counter value to 0
@@ -174,7 +175,19 @@ void setup(){
   TCCR4B |= (1 << WGM42); //turn on CTC mode
   TCCR4B |= (1 << CS42) | (1 << CS40); //Set prescaler to 1024
   TIMSK4 |= (1 << OCIE4A); //Enable timer compare interrupt
+*/
+  //Timer1 16bit timer SERVO_UPDATE_HZ hz for servo update
+  
+  TCCR1A = 0;  //Sets tccr3a register to 0
+  TCCR1B = 0;  //sets tccr3b register to 0
+  TCNT1 = 0;   //initialize counter value to 0
 
+   // compare match register for SERVO_UPDATE_HZ hz increments
+  OCR1A = long(16000000)/(long(SERVO_UPDATE_HZ)*1024) - 1;// 155;  //= (16*10 upphöjt 6) / (100*1024) - 1
+  TCCR1B |= (1 << WGM12); //turn on CTC mode
+  TCCR1B |= (1 << CS12) | (1 << CS10); //Set prescaler to 1024
+  TIMSK1 |= (1 << OCIE1A); //Enable timer compare interrupt
+  
   interrupts();
 
 }
@@ -193,7 +206,7 @@ ISR(TIMER5_COMPA_vect){
   velocity_pub.publish(&velocity_msg);
 }
 
-ISR(TIMER4_COMPA_vect)
+ISR(TIMER1_COMPA_vect)
 {
   
   int current_pos = analogRead(servo_position_pin);
@@ -217,7 +230,7 @@ ISR(TIMER4_COMPA_vect)
   }
   else{                        //At position, send speed 0 and return
     //Return to center if no new turn message
-    servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
+    //servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
     analogWrite(servo_speed_pwm_pin, 0); //pin 3
     return;
   }
@@ -228,11 +241,11 @@ ISR(TIMER4_COMPA_vect)
   PORTE ^= (-servo_dir[1] ^ PORTE) & (1 << 3); //sets the PE3 bit to servo_dir[1] value
   analogWrite(servo_speed_pwm_pin, SERVO_SPEED);
   internal_servo_counter++;
-  if(internal_servo_counter > SERVO_COUNTER_THRESHOLD){
+  //if(internal_servo_counter > SERVO_COUNTER_THRESHOLD){
    //Return to center if no new turn message
-   servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
-   internal_servo_counter = 0;
-  }
+   //servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
+   //internal_servo_counter = 0;
+  //}
   
 }
 

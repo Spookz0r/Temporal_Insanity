@@ -16,7 +16,7 @@ class image_converter:
 		
 		
 		self.bridge = CvBridge()
-		self.image_sub = rospy.Subscriber("image_compressed",CompressedImage,self.callback, queue_size=1)
+		self.image_sub = rospy.Subscriber("image/compressed",CompressedImage,self.callback, queue_size=1)
 		print("Created image converter")
 
 	def callback(self, data):

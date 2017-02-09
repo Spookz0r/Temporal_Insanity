@@ -13,11 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 
-set(CMAKE_PREFIX_PATH "/home/opencv-3.1.0")
-find_package(OpenCV 3.1 REQUIRED)
-set(OpenCV_INCLUDE_DIRS "/home/opencv-3.1.0/include")
+find_package(OpenCV)
+include_directories(include ${OpenCV_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
-
 ###########
 ## Build ##
 ###########

@@ -13,11 +13,13 @@ import numpy as np
 def main(args):
     rospy.init_node('camera_publisher', anonymous=True)
     
-    image_pub = rospy.Publisher("image_topic",Image, queue_size=1)
-    image_pub_compressed = rospy.Publisher("image_compressed",CompressedImage,queue_size=1)
+    image_pub = rospy.Publisher("image",Image, queue_size=1)
+    image_pub_compressed = rospy.Publisher("image/compressed",CompressedImage,queue_size=1)
     
     bridge = CvBridge()
     cap = cv2.VideoCapture(0)
+    cap.set(3,320);
+    cap.set(4,240);
 
     while(True):
         ret, frame = cap.read()
