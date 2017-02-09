@@ -11,8 +11,8 @@ void setup() {
   pinMode(19, INPUT);
   Serial.begin(9600);
  
-  attachInterrupt(digitalPinToInterrupt(18), bip, FALLING );
-  attachInterrupt(digitalPinToInterrupt(19), bip, FALLING );
+  attachInterrupt(46, bip, FALLING ); //18
+  attachInterrupt(45, bip, FALLING ); //19
 }
 
 int motor_dir[] = {0,1};

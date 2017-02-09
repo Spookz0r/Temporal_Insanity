@@ -77,7 +77,7 @@ def main(args):
 		
 		#print("--- %s camera capture seconds ---" % (time.time() - start_time))
 		ros_start_time = time.time()
-		image_pub.publish(bridge.cv2_to_imgmsg(frame, encoding="bgr8"))
+		#image_pub.publish(bridge.cv2_to_imgmsg(frame, encoding="bgr8"))
 		
 		## Create compressed image message
 		msg = CompressedImage()
