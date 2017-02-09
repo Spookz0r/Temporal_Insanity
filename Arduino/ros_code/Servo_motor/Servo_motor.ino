@@ -147,27 +147,25 @@ void setup(){
   TCCR3B = 0;  //sets tccr3b register to 0
   TCNT3 = 0;   //initialize counter value to 0
 
-    // compare match register for 100 hz increments
+    // compare match register for VELOCITY_PUBLISH_HZ hz increments
   OCR3A = long(16000000)/(long(VELOCITY_PUBLISH_HZ)*1024) - 1;  //= (16*10 upphöjt 6) / (100*1024) - 1
   TCCR3B |= (1 << WGM32); //turn on CTC mode
   TCCR3B |= (1 << CS32) | (1 << CS40); //Set prescaler to 1024
   TIMSK3 |= (1 << OCIE3A); //Enable timer compare interrupt
 
   
-  //Timer4  16bit timer 100 hz for servo update
+  //Timer4  16bit timer SERVO_UPDATE_HZ hz for servo update
   
   TCCR4A = 0;  //Sets tccr3a register to 0
   TCCR4B = 0;  //sets tccr3b register to 0
   TCNT4 = 0;   //initialize counter value to 0
 
-    // compare match register for 100 hz increments
+   // compare match register for SERVO_UPDATE_HZ hz increments
   OCR4A = long(16000000)/(long(SERVO_UPDATE_HZ)*1024) - 1;// 155;  //= (16*10 upphöjt 6) / (100*1024) - 1
   TCCR4B |= (1 << WGM42); //turn on CTC mode
   TCCR4B |= (1 << CS42) | (1 << CS40); //Set prescaler to 1024
   TIMSK4 |= (1 << OCIE4A); //Enable timer compare interrupt
 
-
-  
   interrupts();
 
 }
@@ -188,13 +186,6 @@ ISR(TIMER3_COMPA_vect){
 
 ISR(TIMER4_COMPA_vect)
 {
-  String message = "Hello";
-  
-  char charBuf[message.length()+1];
-  message.toCharArray(charBuf,message.length()+1);
-  str_msg.data = charBuf;
-  info_pub.publish(&str_msg);
-  
   int current_pos = analogRead(servo_position_pin);
   int pos = servo_value;
   if(pos < current_pos-5){        // We need to turn right
@@ -204,15 +195,14 @@ ISR(TIMER4_COMPA_vect)
   else if(pos > current_pos + 5){  //Need to turn left
     servo_dir[0] = 0;
     servo_dir[1] = 1;
-
   }
   else{                        //At position, send speed 0 and return
     analogWrite(servo_speed_pwm_pin, 0); //pin 3
-    
     return;
   }
 //  digitalWrite(servo_direction_pin0, servo_dir[0]); //pin4
   //digitalWrite(servo_direction_pin1, servo_dir[1]); //pin 5
+  
   PORTG ^= (-servo_dir[0] ^ PORTG) & (1 << 5); //sets the PG5 bit to servo_dir[0] value
   PORTE ^= (-servo_dir[1] ^ PORTE) & (1 << 3); //sets the PE3 bit to servo_dir[1] value
   analogWrite(servo_speed_pwm_pin, SERVO_SPEED);
