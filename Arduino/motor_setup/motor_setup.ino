@@ -16,7 +16,7 @@ void setup() {
 }
 
 int motor_dir[] = {0,1};
-int num = 240;
+int num = 100;
 void loop() {
   digitalWrite(motor_direction_pin0, motor_dir[0]);
   analogWrite(5,100);   

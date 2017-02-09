@@ -1,4 +1,4 @@
-/*
+/* Dont use TIMER 3, interrupts the h-bridge, at least for the servo
 To start ros node in terminal:
  rosrun rosserial_python serial_node.py /dev/ttyACM0
  
@@ -21,6 +21,8 @@ To start ros node in terminal:
            blue -> 5V
            yellow -> 18
            white -> 19
+
+ Connect joystick and press  @ + B for joystick mode
 */           
 
 #include <ros.h>
@@ -30,16 +32,19 @@ To start ros node in terminal:
 #include <std_msgs/String.h>
 
 
-#define MAX_RIGHT 410
+#define MAX_RIGHT 440
 #define MAX_LEFT 640
 #define MID_POS 525
-#define SERVO_SPEED 30
+#define SERVO_SPEED 40
+#define SERVO_UPDATE_HZ 100
+#define SERVO_THRESHOLD 4
+#define SERVO_COUNTER_THRESHOLD 50
+
 #define ENCODER_A_PIN 18
 #define ENCODER_B_PIN 19
 #define PULSES_PER_REVOLUTION 680
 #define WHEEL_RADIUS_MM 30
 #define VELOCITY_PUBLISH_HZ 20
-#define SERVO_UPDATE_HZ 100
 
 int servo_speed_pwm_pin = 3; // Channel A speed
 int servo_direction_pin0 = 4; // Channel A direction 0
@@ -48,6 +53,7 @@ int servo_dir[] = {1,0};
 int readValue = 0;
 int servo_position_pin = A8;
 int servo_value = MID_POS;
+volatile int internal_servo_counter = 0;
 
 //Motor Setup
 int motor_speed_pwm_pin = 6;
@@ -73,9 +79,12 @@ ros::Publisher velocity_pub("velocity", &velocity_msg);
 
 
 void servo_cb( const std_msgs::UInt16& cmd_msg){
-  servo_value = map(cmd_msg.data,0,100,MAX_RIGHT,MAX_LEFT);
-  if(servo_value > 100) servo_value = 100;
-  if(servo_value < 0) servo_value = 0;
+  int tmp_servo = cmd_msg.data;
+  if(tmp_servo > 100) tmp_servo = 100;
+  if(tmp_servo < 0) tmp_servo = 0;
+  servo_value = map(tmp_servo,0,100,MAX_RIGHT,MAX_LEFT);
+  internal_servo_counter = 0;
+  
 }
 
 void set_motor_speed_cb(const std_msgs::Int16& speed_msg){
@@ -142,16 +151,16 @@ void setup(){
 
   noInterrupts();
 
-  //Timer3 16bit timer VELOCITY_PUBLISH_HZ hz for publish velocity
-  TCCR3A = 0;  //Sets tccr3a register to 0
-  TCCR3B = 0;  //sets tccr3b register to 0
-  TCNT3 = 0;   //initialize counter value to 0
+  //Timer5 16bit timer VELOCITY_PUBLISH_HZ hz for publish velocity
+  TCCR5A = 0;  //Sets tccr3a register to 0
+  TCCR5B = 0;  //sets tccr3b register to 0
+  TCNT5 = 0;   //initialize counter value to 0
 
     // compare match register for VELOCITY_PUBLISH_HZ hz increments
-  OCR3A = long(16000000)/(long(VELOCITY_PUBLISH_HZ)*1024) - 1;  //= (16*10 upphöjt 6) / (100*1024) - 1
-  TCCR3B |= (1 << WGM32); //turn on CTC mode
-  TCCR3B |= (1 << CS32) | (1 << CS40); //Set prescaler to 1024
-  TIMSK3 |= (1 << OCIE3A); //Enable timer compare interrupt
+  OCR5A = long(16000000)/(long(VELOCITY_PUBLISH_HZ)*1024) - 1;  //= (16*10 upphöjt 6) / (100*1024) - 1
+  TCCR5B |= (1 << WGM52); //turn on CTC mode
+  TCCR5B |= (1 << CS52) | (1 << CS50); //Set prescaler to 1024
+  TIMSK5 |= (1 << OCIE5A); //Enable timer compare interrupt
 
   
   //Timer4  16bit timer SERVO_UPDATE_HZ hz for servo update
@@ -170,7 +179,7 @@ void setup(){
 
 }
 
-ISR(TIMER3_COMPA_vect){
+ISR(TIMER5_COMPA_vect){
   
   encoder_pos_new = encoder_pos;
   new_time = millis();
@@ -186,26 +195,45 @@ ISR(TIMER3_COMPA_vect){
 
 ISR(TIMER4_COMPA_vect)
 {
+  
   int current_pos = analogRead(servo_position_pin);
-  int pos = servo_value;
-  if(pos < current_pos-5){        // We need to turn right
+  
+  int pos = servo_value;  
+  /*
+  String temp_msg = "current: " + String(current_pos) + " pos: " + String(pos);
+  char charBuf[temp_msg.length()+1];
+  charBuf[temp_msg.length()+1];
+  temp_msg.toCharArray(charBuf, temp_msg.length()+1);
+  str_msg.data = charBuf;
+  info_pub.publish(&str_msg);
+  */
+  if(pos < current_pos-SERVO_THRESHOLD){        // We need to turn right
     servo_dir[0] = 1;
     servo_dir[1] = 0;
   }
-  else if(pos > current_pos + 5){  //Need to turn left
+  else if(pos > current_pos + SERVO_THRESHOLD){  //Need to turn left
     servo_dir[0] = 0;
     servo_dir[1] = 1;
   }
   else{                        //At position, send speed 0 and return
+    //Return to center if no new turn message
+    servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
     analogWrite(servo_speed_pwm_pin, 0); //pin 3
     return;
   }
-//  digitalWrite(servo_direction_pin0, servo_dir[0]); //pin4
+  //digitalWrite(servo_direction_pin0, servo_dir[0]); //pin4
   //digitalWrite(servo_direction_pin1, servo_dir[1]); //pin 5
   
   PORTG ^= (-servo_dir[0] ^ PORTG) & (1 << 5); //sets the PG5 bit to servo_dir[0] value
   PORTE ^= (-servo_dir[1] ^ PORTE) & (1 << 3); //sets the PE3 bit to servo_dir[1] value
   analogWrite(servo_speed_pwm_pin, SERVO_SPEED);
+  internal_servo_counter++;
+  if(internal_servo_counter > SERVO_COUNTER_THRESHOLD){
+   //Return to center if no new turn message
+   servo_value =  ( MAX_RIGHT + MAX_LEFT ) / 2;
+   internal_servo_counter = 0;
+  }
+  
 }
 
 void loop(){
