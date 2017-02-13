@@ -9,6 +9,7 @@ from sensor_msgs.msg import CompressedImage
 import cv2, sys
 import numpy as np
 
+#Converts a compressed image message to opencv image format
 class image_converter:
 	
 	def __init__(self):
@@ -19,29 +20,17 @@ class image_converter:
 		print("Created image converter")
 
 	def callback(self, data):
-		##Cv bridge does not support compressed image in python...
-# 		try:
-# 			cv_image = self.bridge.imgmsg_to_cv2(data,"bgr8")
-# 		except CvBridgeError as e:
-# 			print(e)
+
 		np_arr = np.fromstring(data.data, np.uint8)
 		image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
-		
-		
-		
-		
-		
-		
+
 		cv2.imshow("Image window", image_np)
-		cv2.waitKey(2)
-
-
-
+		cv2.waitKey(1)
 
 
 def main(args):
 	ic = image_converter()
-	rospy.init_node('image_converter', anonymous=True)
+	rospy.init_node('camera_show', anonymous=True)
 	try:
 		rospy.spin()
 	except KeyboardInterrupt:

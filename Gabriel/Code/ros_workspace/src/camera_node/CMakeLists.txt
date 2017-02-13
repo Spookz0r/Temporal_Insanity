@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenCV)
 include_directories(include ${OpenCV_INCLUDE_DIRS})
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ###########
 ## Build ##
 ###########
@@ -23,8 +24,11 @@ include_directories(include ${OpenCV_INCLUDE_DIRS})
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
 )
-
+catkin_package()
 
 catkin_python_setup()
+
+add_executable(camera_pub_cpp src/camera_pub_cpp.cpp)
+target_link_libraries(camera_pub_cpp ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})

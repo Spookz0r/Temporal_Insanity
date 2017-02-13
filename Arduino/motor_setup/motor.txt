@@ -1,0 +1,13 @@
+Note that colors specified are of the cables directly connected to the motor/Encoder. Not the colors of any extensions. 
+
+https://hackaday.io/project/11382-dc-motor-speed-control-with-pid
+
+Motor: 
+Black, motor GND
+Red, motor VCC
+
+Encoder: 
+Green, GND
+Blue, 3.5-20V
+Yellow, signal A
+White, signal B
