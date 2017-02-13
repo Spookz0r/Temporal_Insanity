@@ -1,0 +1,13 @@
+<launch>
+  <!-- Gabriel -->
+
+  $export ROS_MASTER_URI=http://nitrogen:11311
+
+
+   <node name="GUI" pkg="gui" type="gui">
+   # <param name="image_transport" value="compressed" />
+  </node> 
+
+
+
+</launch>

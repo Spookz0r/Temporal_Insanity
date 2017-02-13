@@ -8,11 +8,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
-  opencv2
   cv_bridge
   std_msgs
 )
 
+
+find_package(OpenCV)
+include_directories(include ${OpenCV_INCLUDE_DIRS})
 ###########
 ## Build ##
 ###########
