@@ -26,6 +26,14 @@ Icon::Icon(GUI & gui, std::string name){
 	icon->set_from_icon_name(icon_error,icon_size);
 }
 
+Icon::Icon(GUI & gui, std::string name, std::string icon_name){
+
+	my_gui = &gui;
+	_name = name;
+	my_gui->refBuilder->get_widget(_name, icon);
+	icon->set_from_icon_name(icon_name,icon_size);
+}
+
 
 Icon::Icon(GUI & gui, std::vector<Icon> icon_vector){
 

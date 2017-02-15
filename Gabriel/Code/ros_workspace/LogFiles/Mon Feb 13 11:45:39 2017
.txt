@@ -1,0 +1,2 @@
+11:45:42 >> Started Recording
+11:45:42 >> creating blabla to store data

@@ -1,0 +1,40 @@
+13:00:00 >> Started Recording
+13:00:00 >> creating blabla
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:05 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:06 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:07 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:08 >> Sending stop to motor.
+13:00:09 >> Sending stop to motor.
+13:00:09 >> Sending stop to motor.
+13:00:09 >> Sending stop to motor.
+13:00:12 >> Stopped Recording
+13:00:16 >> Started Recording
+13:00:16 >> creating blabla

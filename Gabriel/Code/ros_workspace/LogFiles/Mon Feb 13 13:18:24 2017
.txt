@@ -1,0 +1,3 @@
+13:18:32 >> Started Recording
+13:18:32 >> creating blabla
+13:18:36 >> Stopped Recording

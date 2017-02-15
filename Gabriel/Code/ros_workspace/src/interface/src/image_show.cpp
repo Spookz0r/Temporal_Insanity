@@ -44,7 +44,7 @@ void Image_show::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 		// start reading image
 		cv_bridge::CvImagePtr cv_ptr;
 	  	cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-	  
+	  	cv_ptr->image.copyTo(my_gui->camera_image);  //Copy the image to gui for storage
 		cv::cvtColor(cv_ptr->image, image_1, CV_BGR2RGB);
 		cv::resize(image_1,image_0,cv::Size(640,480));
 		_image = Gdk::Pixbuf::create_from_data(image_0.data, Gdk::COLORSPACE_RGB, false, 8, image_0.cols, image_0.rows,image_0.step);

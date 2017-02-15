@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
 	
 
 	// ############## Buttons ###############
-	Buttons accelerate(gui,"accelerate_button",5,0);
-	Buttons reverse(gui,"reverse_button",-5);
-	Buttons left(gui,"left_button",-10,-1);
-	Buttons right(gui,"right_button",10,1);
-	Buttons stop(gui,"stop_button",0);
+	//Buttons accelerate(gui,"accelerate_button",5,0);
+	//Buttons reverse(gui,"reverse_button",-5);
+	//Buttons left(gui,"left_button",-10,-1);
+	//Buttons right(gui,"right_button",10,1);
+	//Buttons stop(gui,"stop_button",0);
 	Buttons button_manual_control(gui,"button_manual_control",0,true);
 	
 	// ############# Images ###################
@@ -89,6 +89,11 @@ int main(int argc, char *argv[])
 	std::vector<Icon> icon_vector ={icon_camera,icon_wifi};
 	Icon icons(gui, icon_vector);
 
+	Icon icon_forward(gui,"icon_forward","gtk-go-up");
+	Icon icon_backward(gui,"icon_backward","gtk-go-down");
+	Icon icon_left(gui,"icon_left","gtk-go-left");
+	Icon icon_right(gui,"icon_right","gtk-go-right");
+
 
 	//######################## TIMER FOR UPDATING STATUS#################
 	int m_timer_number = 1;
@@ -103,31 +108,34 @@ int main(int argc, char *argv[])
  	sigc::slot<bool> my_slot2 = sigc::bind(sigc::mem_fun(gui, &GUI::on_timeout), 1);
  	sigc::connection conn2 = Glib::signal_timeout().connect(my_slot2, timeout_value);
 
+ 	//################## ROS TIMER FOR PUBLISH SPEED/ACCELERATION #######################
+ 	ros::Timer timer = n.createTimer(ros::Duration(0.05), &GUI::timer_manual_control, &gui);
+
  	//################ BUTTON PUBLISHERS ########################
- 	accelerate.button_pub = n.advertise<std_msgs::Int8 >("user_motor_control", 1);
- 	accelerate.has_publisher = true;
- 	accelerate.pub_direction_choice = n.advertise<std_msgs::Int16 >("direction_choice", 1);
+ 	//accelerate.button_pub = n.advertise<std_msgs::Int8 >("user_motor_control", 1);
+ 	//accelerate.has_publisher = true;
+ 	//accelerate.pub_direction_choice = n.advertise<std_msgs::Int16 >("direction_choice", 1);
 
- 	reverse.button_pub = n.advertise<std_msgs::Int8 >("user_motor_control", 1);
- 	reverse.has_publisher = true;
+ 	//reverse.button_pub = n.advertise<std_msgs::Int8 >("user_motor_control", 1);
+ 	//reverse.has_publisher = true;
 
- 	left.button_pub = n.advertise<std_msgs::Int8 >("user_servo_control", 1);
- 	left.has_publisher = true;
- 	left.pub_direction_choice = n.advertise<std_msgs::Int16>("direction_choice",1);
+ 	//left.button_pub = n.advertise<std_msgs::Int8 >("user_servo_control", 1);
+ 	//left.has_publisher = true;
+ 	//left.pub_direction_choice = n.advertise<std_msgs::Int16>("direction_choice",1);
 
 
- 	right.button_pub = n.advertise<std_msgs::Int8 >("user_servo_control", 1);
- 	right.has_publisher = true;
+ 	//right.button_pub = n.advertise<std_msgs::Int8 >("user_servo_control", 1);
+ 	//right.has_publisher = true;
 
- 	right.pub_direction_choice = n.advertise<std_msgs::Int16>("direction_choice",1);
+ 	//right.pub_direction_choice = n.advertise<std_msgs::Int16>("direction_choice",1);
 
 
  	button_manual_control.button_pub = n.advertise<std_msgs::Int8 >("user_manual_control",1);
  	button_manual_control.has_publisher = true;
 	gui.pub_manual_control = n.advertise<std_msgs::Int8 >("user_manual_control",1);
 
- 	stop.button_pub = n.advertise<std_msgs::Int8 >("user_stop_control", 1);
- 	stop.has_publisher = true;
+ 	//stop.button_pub = n.advertise<std_msgs::Int8 >("user_stop_control", 1);
+ 	//stop.has_publisher = true;
 
 
 	gui.pub_manual_steering = n.advertise<std_msgs::UInt16 >("/servo",1);
@@ -139,7 +147,9 @@ int main(int argc, char *argv[])
 	ros::AsyncSpinner spinner(4); // Use 4 threads
 	spinner.start();
 
+
 	gui.pWindow->signal_key_press_event().connect( sigc::mem_fun(gui, &GUI::on_key_press_event), false );
+	gui.pWindow->signal_key_release_event().connect( sigc::mem_fun(gui, &GUI::on_key_press_event), false );
 	
 	app->run(*gui.pWindow);
 	delete pWindow;	

@@ -17,6 +17,7 @@ class Icon {
 public:
 	Icon();
 	Icon(GUI & , std::string );
+	Icon(GUI & , std::string, std::string);
 	Icon(GUI & , std::vector<Icon>);
 	virtual ~Icon();
 

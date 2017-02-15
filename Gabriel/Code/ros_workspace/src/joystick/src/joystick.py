@@ -18,7 +18,8 @@ def main(args):
     rospy.init_node('joystick', anonymous=True)
     
     steering_pub = rospy.Publisher("servo",UInt16, queue_size=1)
-	
+    speed_pub = rospy.Publisher("motor",Int16, queue_size=1)
+
     pygame.init()
     print(int(remap(0.55, 0.88, -0.89,0,100)))
     rate = rospy.Rate(10)
@@ -37,7 +38,18 @@ def main(args):
 
             speed = joystick.get_axis(0) # max forward = -0.85, max backward = 0.82
             steering = joystick.get_axis(1) # max left = 0.88, max right = -0.89
-            steering_pub.publish( int(remap(steering, 0.88, -0.89,0,100)) )
+            steering_pub.publish( int(remap(steering, 0.88, -0.89,100,0)) )
+
+            if(speed <= 0):
+                tmp_speed = int(remap(speed, -0.89, 0,255,60))
+                if(tmp_speed < 70): tmp_speed = 0 
+                speed_pub.publish(tmp_speed)
+            elif(speed >0):
+                tmp_speed = int(remap(speed, 0.88, 0,-255,-60)) 
+                if(tmp_speed > -70): tmp_speed = 0 
+                speed_pub.publish(tmp_speed)
+
+
 			
         rate.sleep()
     try:
